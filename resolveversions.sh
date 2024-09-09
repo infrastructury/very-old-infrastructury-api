@@ -6,7 +6,8 @@ versions=()
 for d in versionProperties/*; do
   # Get the name of the version that is going to be compiled
   version=$(echo "$d" | sed "s/versionProperties\///" | sed "s/.properties//")
-  versions+=("{\"mc\":\"$version\"}")
+  javaVersion=$(grep 'java_version=' "$d" | sed "s/java_version=//")
+  versions+=("{\"mc\":\"$version\",\"java\":\"$javaVersion\"}")
 done
 
 versionsJson=$(jo -a -- "${versions[@]}")

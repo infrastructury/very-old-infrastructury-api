@@ -22,10 +22,10 @@ jobs:
       matrix: ${{ fromJson(needs.resolve-versions.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
-          java-version: "17"
+          java-version: ${{ matrix.java }}
           distribution: "temurin"
       - name: Build
         run: ./buildsingle.sh "${{ matrix.mc }}"
@@ -34,11 +34,6 @@ jobs:
           name: "buildAllJars-${{matrix.mc}}"
           path: buildAllJars/*.jar
           if-no-files-found: error
-      - name: Publish Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        run: MAVEN_PASS="${{ secrets.MAVEN_PASS }}" MAVEN_TYPE=production ./gradlew publish -PmcVer="${{ matrix.mc }}" --no-daemon
-      - name: Publish Snapshot
-        run: MAVEN_PASS="${{ secrets.MAVEN_PASS }}" ./gradlew publish -PmcVer="${{ matrix.mc }}" --no-daemon
 
   deploy:
     needs: build
